@@ -1,21 +1,21 @@
 {
-  "name": "modely",
-  "main": "modely.js",
+  "name": "validating",
+  "main": "validating.js",
   "version": "0.0.1",
-  "homepage": "https://github.com/codemix/modely",
+  "homepage": "https://github.com/codemix/validating",
   "authors": [
     "Charles Pick <charles@codemix.com>"
   ],
-  "description": "Fast and flexible data models for node.js and the browser.",
+  "description": "Quick and easy validators for node.js and the browser.",
   "moduleType": [
-    "globals",
     "node"
   ],
   "keywords": [
-    "model",
-    "models",
-    "data models",
-    "mvc"
+    "valid",
+    "validation",
+    "validator",
+    "validators",
+    "validating"
   ],
   "license": "MIT",
   "ignore": [
