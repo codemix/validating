@@ -125,6 +125,12 @@ describe('validators.type', function () {
     type: 'string'
   });
 
+  it('should allow empty values', function () {
+    validator.allowEmpty = true;
+    validator.validate(null).should.be.true;
+    validator.allowEmpty = false;
+  });
+
   it('should validate strings', function () {
     validator.validate('hello world').should.be.true;
     validator.validate('').should.be.true;
@@ -205,8 +211,16 @@ describe('validators.instanceOf', function () {
 
 describe('validators.length', function () {
   var validator = Validating.create('length', {
+    allowEmpty: true,
     min: 3,
     max: 6
+  });
+
+
+  it('should allow empty values', function () {
+    validator.validate('').should.be.true;
+    validator.validate([]).should.be.true;
+    validator.validate({}).should.be.true;
   });
 
   it('should validate string lengths', function () {
@@ -218,7 +232,6 @@ describe('validators.length', function () {
   });
 
   it('should validate array lengths', function () {
-    validator.validate([]).should.equal('Too short, should contain at least 3 item(s).');
     validator.validate([1]).should.equal('Too short, should contain at least 3 item(s).');
     validator.validate([1,2,3,4,5,6,7]).should.equal('Too long, should contain at most 6 item(s).');
     validator.validate([1,2,3]).should.be.true;
@@ -227,7 +240,6 @@ describe('validators.length', function () {
   });
 
   it('should validate object lengths', function () {
-    validator.validate({}).should.equal('Too short, should contain at least 3 key(s).');
     validator.validate({a:1}).should.equal('Too short, should contain at least 3 key(s).');
     validator.validate({a:1,b:2,c:3,d:4,e:5,f:6,g:7}).should.equal('Too long, should contain at most 6 key(s).');
     validator.validate({a:1,b:2,c:3}).should.be.true;
@@ -238,8 +250,14 @@ describe('validators.length', function () {
 
 describe('validators.number', function () {
   var validator = Validating.create('number', {
+    allowEmpty: true,
     min: 3,
     max: 10
+  });
+
+
+  it('should allow empty values', function () {
+    validator.validate(null).should.be.true;
   });
 
   it('should reject invalid values', function () {
@@ -259,4 +277,36 @@ describe('validators.number', function () {
     validator.validate(5).should.be.true;
     validator.validate(10).should.be.true;
   });
+});
+
+describe('validators.boolean', function () {
+  var validator = Validating.create('boolean', {
+    allowEmpty: true,
+    trueValues: [true, 1, '1', 'true'],
+    falseValues: [false, 0, '0', 'false']
+  });
+
+  it('should allow empty values', function () {
+    validator.validate(null).should.be.true;
+  });
+
+  it('should reject invalid values', function () {
+    validator.validate('nope').should.equal('Must be true or false.');
+    validator.validate({a: 'nope'}).should.equal('Must be true or false.');
+  });
+
+  it('should accept true values', function () {
+    validator.validate(true).should.be.true;
+    validator.validate(1).should.be.true;
+    validator.validate('1').should.be.true;
+    validator.validate('true').should.be.true;
+  });
+
+  it('should accept false values', function () {
+    validator.validate(false).should.be.true;
+    validator.validate(0).should.be.true;
+    validator.validate('0').should.be.true;
+    validator.validate('false').should.be.true;
+  });
+
 });

@@ -389,6 +389,41 @@ exports.number = {
         }
     }
 };
+/**
+ * # Boolean Validator
+ *
+ * Ensures that the given value is true or false.
+ *
+ * @type {Function}
+ */
+exports.boolean = {
+    messages: {
+        default: function () {
+            return { default: 'Must be true or false.' };
+        }
+    },
+    trueValues: {
+        default: function () {
+            return [true];
+        }
+    },
+    falseValues: {
+        default: function () {
+            return [false];
+        }
+    },
+    validate: function (value) {
+        if (this.allowEmpty && this.isEmpty(value)) {
+            return true;
+        } else if (~this.trueValues.indexOf(value)) {
+            return true;
+        } else if (~this.falseValues.indexOf(value)) {
+            return true;
+        } else {
+            return this.message;
+        }
+    }
+};
 },{"obligations":5}],4:[function(require,module,exports){
 "use strict";
 
