@@ -7,7 +7,7 @@ var OBLIGATIONS = require('obligations');
  */
 exports.Validator = require('./validator');
 /**
- * A list of builting validators.
+ * A list of builtin validators.
  * @type {Object}
  */
 exports.validators = Object.create(null);
@@ -43,6 +43,8 @@ exports.create = function (name, properties) {
  * @return {Function}             The validation function.
  */
 exports.forDescriptors = function (descriptors) {
+    OBLIGATIONS.precondition(descriptors && typeof descriptors === 'object', 'Descriptors must be an object.');
+    var __result;
     var names = Object.keys(descriptors), total = names.length, validators = [], lines = [], descriptor, name, items, i, accessor;
     for (i = 0; i < total; i++) {
         name = names[i];
@@ -63,7 +65,9 @@ exports.forDescriptors = function (descriptors) {
     var body = 'var isValid = true,\n' + '    errors = {},\n' + '    result;\n\n' + lines.join('\n') + '\n' + 'return {valid: isValid, errors: errors};';
     var fn = new Function('validators', 'obj', body);
     // jshint ignore: line
-    return fn.bind(undefined, validators);
+    __result = fn.bind(undefined, validators);
+    OBLIGATIONS.postcondition(typeof __result === 'function');
+    return __result;
 };
 /**
  * Process a rule for a descriptor.
@@ -98,6 +102,7 @@ for (i = 0; i < total; i++) {
     exports.define(name, validators[name]);
 }
 },{"./validator":2,"./validators":3,"obligations":5}],2:[function(require,module,exports){
+var OBLIGATIONS = require('obligations');
 'use strict';
 var Class = require('classing');
 /**
@@ -156,6 +161,8 @@ module.exports = Class.create({
    * @return {String}            The prepared error message.
    */
     prepare: function (message, references) {
+        OBLIGATIONS.precondition(typeof message === 'string', 'Message must be a string.');
+        OBLIGATIONS.precondition(references && typeof references === 'object', 'References must be an object.');
         return message.replace(/\{\{(\w+)\}\}/g, function (token, item) {
             return references[item] || '';
         });
@@ -172,7 +179,7 @@ module.exports = Class.create({
         return true;
     }
 });
-},{"classing":4}],3:[function(require,module,exports){
+},{"classing":4,"obligations":5}],3:[function(require,module,exports){
 var OBLIGATIONS = require('obligations');
 'use strict';
 /**
@@ -201,7 +208,7 @@ exports.required = {
  *
  * Ensures that a given value has the correct JavaScript type.
  *
- * @type {Function}
+ * @type {Validator}
  */
 exports.type = {
     messages: {
@@ -233,7 +240,7 @@ exports.type = {
  *
  * Ensures that a given value is an object that is an instance of the given class.
  *
- * @type {Function}
+ * @type {Validator}
  */
 exports.instanceOf = {
     messages: {
@@ -275,6 +282,75 @@ exports.instanceOf = {
             };
         }
         return this.prepare(this.message, references);
+    }
+};
+/**
+ * # Length Validator
+ *
+ * Validates the length of the given string, array or object.
+ *
+ * @type {Validator}
+ */
+exports.length = {
+    messages: {
+        default: function () {
+            return {
+                invalid: 'The value is invalid.',
+                tooShortString: 'Too short, should be at least {{length}} character(s).',
+                tooLongString: 'Too long, should be at most {{length}} character(s).',
+                tooShortArray: 'Too short, should contain at least {{length}} item(s).',
+                tooLongArray: 'Too long, should contain at most {{length}} item(s).',
+                tooShortObject: 'Too short, should contain at least {{length}} key(s).',
+                tooLongObject: 'Too long, should contain at most {{length}} key(s).'
+            };
+        }
+    },
+    min: {},
+    max: {},
+    validate: function (value) {
+        OBLIGATIONS.precondition(this.min || this.max, 'No constraints specified for length validator.');
+        if (this.allowEmpty && this.isEmpty(value)) {
+            return true;
+        } else if (typeof value === 'string') {
+            return this.validateString(value);
+        } else if (Array.isArray(value)) {
+            return this.validateArray(value);
+        } else if (value && typeof value === 'object') {
+            return this.validateObject(value);
+        } else {
+            return this.messages.invalid;    // invalid type
+        }
+    },
+    validateString: function (value) {
+        OBLIGATIONS.precondition(typeof value === 'string', 'Value must be a string.');
+        if (this.min && value.length < this.min) {
+            return this.prepare(this.messages.tooShortString, { length: this.min });
+        } else if (this.max && value.length > this.max) {
+            return this.prepare(this.messages.tooLongString, { length: this.max });
+        } else {
+            return true;
+        }
+    },
+    validateArray: function (value) {
+        OBLIGATIONS.precondition(Array.isArray(value), 'Value must be an array.');
+        if (this.min && value.length < this.min) {
+            return this.prepare(this.messages.tooShortArray, { length: this.min });
+        } else if (this.max && value.length > this.max) {
+            return this.prepare(this.messages.tooLongArray, { length: this.max });
+        } else {
+            return true;
+        }
+    },
+    validateObject: function (value) {
+        OBLIGATIONS.precondition(value && typeof value === 'object', 'Value must be an object.');
+        var keys = Object.keys(value);
+        if (this.min && keys.length < this.min) {
+            return this.prepare(this.messages.tooShortObject, { length: this.min });
+        } else if (this.max && keys.length > this.max) {
+            return this.prepare(this.messages.tooLongObject, { length: this.max });
+        } else {
+            return true;
+        }
     }
 };
 },{"obligations":5}],4:[function(require,module,exports){

@@ -7,7 +7,7 @@
 exports.Validator = require('./validator');
 
 /**
- * A list of builting validators.
+ * A list of builtin validators.
  * @type {Object}
  */
 exports.validators = Object.create(null);
@@ -48,40 +48,48 @@ exports.create = function (name, properties) {
  * @return {Function}             The validation function.
  */
 exports.forDescriptors = function (descriptors) {
-  var names = Object.keys(descriptors),
-      total = names.length,
-      validators = [],
-      lines = [],
-      descriptor, name, items, i, accessor;
-
-  for (i = 0; i < total; i++) {
-    name = names[i];
-    descriptor = descriptors[name];
-    if (/^([\w|_|$]+)$/.test(name)) {
-      accessor = '.' + name;
-    }
-    else {
-      accessor = '["' + name + '"]';
-    }
-    if (descriptor.rules) {
-      items = descriptor.rules.map(processRule).map(function (validator) {
-        var index = validators.push(validator) - 1;
-        return 'if ((result = validators[' + index + '].validate(obj' + accessor + ')) !== true) {\n' +
-               '  isValid = false;\n' +
-               '  errors' + accessor + ' = result;\n' +
-               '}\n';
-      });
-      lines.push(items.join('else '));
-    }
+  pre: {
+    descriptors && typeof descriptors === 'object', 'Descriptors must be an object.';
   }
-  var body = 'var isValid = true,\n' +
-             '    errors = {},\n' +
-             '    result;\n\n' +
-            lines.join('\n') + '\n' +
-            'return {valid: isValid, errors: errors};';
-  var fn = new Function('validators', 'obj', body); // jshint ignore: line
+  main: {
+    var names = Object.keys(descriptors),
+        total = names.length,
+        validators = [],
+        lines = [],
+        descriptor, name, items, i, accessor;
 
-  return fn.bind(undefined, validators);
+    for (i = 0; i < total; i++) {
+      name = names[i];
+      descriptor = descriptors[name];
+      if (/^([\w|_|$]+)$/.test(name)) {
+        accessor = '.' + name;
+      }
+      else {
+        accessor = '["' + name + '"]';
+      }
+      if (descriptor.rules) {
+        items = descriptor.rules.map(processRule).map(function (validator) {
+          var index = validators.push(validator) - 1;
+          return 'if ((result = validators[' + index + '].validate(obj' + accessor + ')) !== true) {\n' +
+                 '  isValid = false;\n' +
+                 '  errors' + accessor + ' = result;\n' +
+                 '}\n';
+        });
+        lines.push(items.join('else '));
+      }
+    }
+    var body = 'var isValid = true,\n' +
+               '    errors = {},\n' +
+               '    result;\n\n' +
+              lines.join('\n') + '\n' +
+              'return {valid: isValid, errors: errors};';
+    var fn = new Function('validators', 'obj', body); // jshint ignore: line
+
+    return fn.bind(undefined, validators);
+  }
+  post: {
+    typeof __result === 'function';
+  }
 };
 
 /**

@@ -65,9 +65,15 @@ module.exports = Class.create({
    * @return {String}            The prepared error message.
    */
   prepare: function (message, references) {
-    return message.replace(/\{\{(\w+)\}\}/g, function (token, item) {
-      return references[item] || '';
-    });
+    pre: {
+      typeof message === 'string', 'Message must be a string.';
+      references && typeof references === 'object', 'References must be an object.';
+    }
+    main: {
+      return message.replace(/\{\{(\w+)\}\}/g, function (token, item) {
+        return references[item] || '';
+      });
+    }
   },
   /**
    * Validate the given value.

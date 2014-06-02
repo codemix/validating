@@ -39,7 +39,7 @@
     "istanbul": "~0.2.10",
     "jshint": "~2.5.1",
     "uglify-js": "~2.4.13",
-    "contractual": "~0.1.0",
+    "contractual": "~0.1.1",
     "browserify": "~4.1.6"
   },
   "dependencies": {

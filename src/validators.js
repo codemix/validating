@@ -30,7 +30,7 @@ exports.required = {
  *
  * Ensures that a given value has the correct JavaScript type.
  *
- * @type {Function}
+ * @type {Validator}
  */
 exports.type = {
   messages: {
@@ -72,7 +72,7 @@ exports.type = {
  *
  * Ensures that a given value is an object that is an instance of the given class.
  *
- * @type {Function}
+ * @type {Validator}
  */
 exports.instanceOf = {
   messages: {
@@ -126,6 +126,102 @@ exports.instanceOf = {
         };
       }
       return this.prepare(this.message, references);
+    }
+  }
+};
+
+/**
+ * # Length Validator
+ *
+ * Validates the length of the given string, array or object.
+ *
+ * @type {Validator}
+ */
+exports.length = {
+  messages: {
+    default: function () {
+      return {
+        invalid: 'The value is invalid.',
+        tooShortString: 'Too short, should be at least {{length}} character(s).',
+        tooLongString: 'Too long, should be at most {{length}} character(s).',
+        tooShortArray: 'Too short, should contain at least {{length}} item(s).',
+        tooLongArray: 'Too long, should contain at most {{length}} item(s).',
+        tooShortObject: 'Too short, should contain at least {{length}} key(s).',
+        tooLongObject: 'Too long, should contain at most {{length}} key(s).'
+      };
+    }
+  },
+  min: {},
+  max: {},
+  validate: function (value) {
+    pre: {
+      this.min || this.max, 'No constraints specified for length validator.';
+    }
+    main: {
+      if (this.allowEmpty && this.isEmpty(value)) {
+        return true;
+      }
+      else if (typeof value === 'string') {
+        return this.validateString(value);
+      }
+      else if (Array.isArray(value)) {
+        return this.validateArray(value);
+      }
+      else if (value && typeof value === 'object') {
+        return this.validateObject(value);
+      }
+      else {
+        return this.messages.invalid; // invalid type
+      }
+    }
+  },
+  validateString: function (value) {
+    pre: {
+      typeof value === 'string', 'Value must be a string.';
+    }
+    main: {
+      if (this.min && value.length < this.min) {
+        return this.prepare(this.messages.tooShortString, {length: this.min});
+      }
+      else if (this.max && value.length > this.max) {
+        return this.prepare(this.messages.tooLongString, {length: this.max});
+      }
+      else {
+        return true;
+      }
+    }
+  },
+  validateArray: function (value) {
+    pre: {
+      Array.isArray(value), 'Value must be an array.';
+    }
+    main: {
+      if (this.min && value.length < this.min) {
+        return this.prepare(this.messages.tooShortArray, {length: this.min});
+      }
+      else if (this.max && value.length > this.max) {
+        return this.prepare(this.messages.tooLongArray, {length: this.max});
+      }
+      else {
+        return true;
+      }
+    }
+  },
+  validateObject: function (value) {
+    pre: {
+      value && typeof value === 'object', 'Value must be an object.';
+    }
+    main: {
+      var keys = Object.keys(value);
+      if (this.min && keys.length < this.min) {
+        return this.prepare(this.messages.tooShortObject, {length: this.min});
+      }
+      else if (this.max && keys.length > this.max) {
+        return this.prepare(this.messages.tooLongObject, {length: this.max});
+      }
+      else {
+        return true;
+      }
     }
   }
 };

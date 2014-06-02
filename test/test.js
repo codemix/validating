@@ -201,3 +201,37 @@ describe('validators.instanceOf', function () {
     validator.validate({}).should.equal('Expected User, got Object.');
   });
 });
+
+
+describe('validators.length', function () {
+  var validator = Validating.create('length', {
+    min: 3,
+    max: 6
+  });
+
+  it('should validate string lengths', function () {
+    validator.validate('a').should.equal('Too short, should be at least 3 character(s).');
+    validator.validate('abcdefg').should.equal('Too long, should be at most 6 character(s).');
+    validator.validate('abc').should.be.true;
+    validator.validate('abcdef').should.be.true;
+    validator.validate('abcd').should.be.true;
+  });
+
+  it('should validate array lengths', function () {
+    validator.validate([]).should.equal('Too short, should contain at least 3 item(s).');
+    validator.validate([1]).should.equal('Too short, should contain at least 3 item(s).');
+    validator.validate([1,2,3,4,5,6,7]).should.equal('Too long, should contain at most 6 item(s).');
+    validator.validate([1,2,3]).should.be.true;
+    validator.validate([1,2,3,4]).should.be.true;
+    validator.validate([1,2,3,4,5,6]).should.be.true;
+  });
+
+  it('should validate object lengths', function () {
+    validator.validate({}).should.equal('Too short, should contain at least 3 key(s).');
+    validator.validate({a:1}).should.equal('Too short, should contain at least 3 key(s).');
+    validator.validate({a:1,b:2,c:3,d:4,e:5,f:6,g:7}).should.equal('Too long, should contain at most 6 key(s).');
+    validator.validate({a:1,b:2,c:3}).should.be.true;
+    validator.validate({a:1,b:2,c:3,d:4}).should.be.true;
+    validator.validate({a:1,b:2,c:3,d:4,e:5,f:6}).should.be.true;
+  });
+});
