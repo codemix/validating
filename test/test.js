@@ -375,3 +375,17 @@ describe('validators.url', function () {
   });
 });
 
+describe('validators.email', function () {
+  var validator = Validating.create('email');
+
+  it('should reject invalid email addresses', function () {
+    validator.validate('nope').should.equal('Not a valid email address.');
+    validator.validate('nope@nope').should.equal('Not a valid email address.');
+  });
+
+  it('should accept valid email addresses', function () {
+    validator.validate('test@example.com').should.be.true;
+    validator.validate('test+thisisathing@example.com').should.be.true;
+    validator.validate('test+"this is a thing"@example.com').should.be.true;
+  });
+});

@@ -491,6 +491,12 @@ exports.url = {
                 this._pattern = this.createPattern();
             }
             return this._pattern;
+        },
+        set: function (value) {
+            if (typeof value === 'string') {
+                value = new RegExp(value, 'i');
+            }
+            this._pattern = value;
         }
     },
     createPattern: function () {
@@ -508,6 +514,33 @@ exports.url = {
             return this.prepare(this.message);
         } else {
             return true;
+        }
+    }
+};
+/**
+ * # Email Address Validator
+ *
+ * Ensures that the given value is a valid email address.
+ *
+ * > Note: The only really viable way of testing whether an email address is valid
+ * > is to send an email to it. This validator uses a very simple and permissive pattern by default.
+ *
+ * @type {Validator}
+ */
+exports.email = {
+    messages: {
+        default: function () {
+            return { default: 'Not a valid email address.' };
+        }
+    },
+    pattern: { value: /@(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)$/i },
+    validate: function (value) {
+        if (this.allowEmpty && this.isEmpty(value)) {
+            return true;
+        } else if (this.pattern.test(value)) {
+            return true;
+        } else {
+            return this.prepare(this.message);
         }
     }
 };
