@@ -463,6 +463,54 @@ exports.regexp = {
         }
     }
 };
+/**
+ * # URL Validator
+ *
+ * Ensures that the given value is a URL.
+ *
+ * @type {Validator}
+ */
+exports.url = {
+    messages: {
+        default: function () {
+            return { default: 'Not a valid URL.' };
+        }
+    },
+    schemes: {
+        default: function () {
+            return [
+                'http',
+                'https'
+            ];
+        }
+    },
+    strict: { value: true },
+    pattern: {
+        get: function () {
+            if (!this._pattern) {
+                this._pattern = this.createPattern();
+            }
+            return this._pattern;
+        }
+    },
+    createPattern: function () {
+        var pattern = '^(({schemes}):\\/\\/)?(([A-Z0-9][A-Z0-9_-]*)(\\.[A-Z0-9][A-Z0-9_-]*)+)'.replace('{schemes}', this.schemes.join('|'));
+        return new RegExp(pattern, 'i');
+    },
+    validate: function (value) {
+        var matches;
+        if (this.allowEmpty && this.isEmpty(value)) {
+            return true;
+        } else if (!(matches = this.pattern.exec(value))) {
+            return this.prepare(this.message);
+        }
+        if (this.strict && !matches[1]) {
+            return this.prepare(this.message);
+        } else {
+            return true;
+        }
+    }
+};
 },{"obligations":5}],4:[function(require,module,exports){
 "use strict";
 

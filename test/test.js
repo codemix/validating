@@ -336,5 +336,42 @@ describe('validators.regexp', function () {
     validator.validate('Hello').should.be.true;
     validator.validate('World').should.be.true;
   });
+
+});
+
+describe('validators.url', function () {
+  var validator = Validating.create('url');
+
+  it('should allow empty values', function () {
+    validator.allowEmpty = true;
+    validator.validate(null).should.be.true;
+    validator.allowEmpty = false;
+  });
+
+  it('should reject invalid urls', function () {
+    validator.validate('not a url.').should.equal('Not a valid URL.');
+  });
+
+  it('should reject urls with the wrong scheme', function () {
+    validator.validate('ftp://example.com/wat.').should.equal('Not a valid URL.');
+  });
+
+  it('should reject urls with the wrong scheme', function () {
+    validator.validate('ftp://example.com/wat.').should.equal('Not a valid URL.');
+  });
+
+  it('should reject urls without schemes by default', function () {
+    validator.validate('example.com/wat.').should.equal('Not a valid URL.');
+  });
+
+  it('should accept urls with schemes', function () {
+    validator.validate('http://example.com/wat').should.be.true;
+  });
+
+  it('should accept urls without schemes when not in strict mode', function () {
+    validator.strict = false;
+    validator.validate('example.com/wat').should.be.true;
+    validator.strict = true;
+  });
 });
 
