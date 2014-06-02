@@ -310,3 +310,31 @@ describe('validators.boolean', function () {
   });
 
 });
+
+describe('validators.regexp', function () {
+  var validator = Validating.create('regexp', {
+    pattern: '^([A-Z][A-Za-z0-9]*)$'
+  });
+
+  it('should allow empty values', function () {
+    validator.allowEmpty = true;
+    validator.validate(null).should.be.true;
+    validator.allowEmpty = false;
+  });
+
+  it('should reject arrays, objects etc', function () {
+    validator.validate([1, 2, 3]).should.equal('Should be a text value.');
+    validator.validate({a: 1}).should.equal('Should be a text value.');
+  });
+
+  it('should reject strings which do not match', function () {
+    validator.validate('nope').should.equal('Does not match the required pattern.');
+    validator.validate('Nope Nope Nope').should.equal('Does not match the required pattern.');
+  });
+
+  it('should allow values which match', function () {
+    validator.validate('Hello').should.be.true;
+    validator.validate('World').should.be.true;
+  });
+});
+

@@ -17,7 +17,7 @@ exports.required = {
   },
   validate: function (value) {
     if (this.isEmpty(value)) {
-      return this.message;
+      return this.prepare(this.message);
     }
     else {
       return true;
@@ -171,7 +171,7 @@ exports.length = {
         return this.validateObject(value);
       }
       else {
-        return this.messages.invalid; // invalid type
+        return this.prepare(this.messages.invalid); // invalid type
       }
     }
   },
@@ -250,7 +250,7 @@ exports.number = {
       return true;
     }
     else if (typeof value !== 'number') {
-      return this.messages.invalid;
+      return this.prepare(this.messages.invalid);
     }
     else if (this.min && value < this.min) {
       return this.prepare(this.messages.tooSmall);
@@ -300,7 +300,50 @@ exports.boolean = {
       return true;
     }
     else {
-      return this.message;
+      return this.prepare(this.message);
+    }
+  }
+};
+
+/**
+ * # Regular Expression Validator
+ *
+ * Ensures that the given value matches the specified pattern.
+ *
+ * @type {Validator}
+ */
+exports.regexp = {
+  messages: {
+    default: function () {
+      return {
+        default: 'Does not match the required pattern.',
+        badType: 'Should be a text value.'
+      };
+    }
+  },
+  pattern: {
+    get: function () {
+      return this._pattern || new RegExp();
+    },
+    set: function (value) {
+      if (typeof value === 'string') {
+        value = new RegExp(value);
+      }
+      this._pattern = value;
+    }
+  },
+  validate: function (value) {
+    if (this.allowEmpty && this.isEmpty(value)) {
+      return true;
+    }
+    else if (typeof value !== 'string') {
+      return this.prepare(this.messages.badType);
+    }
+    else if (this.pattern.test(value)) {
+      return true;
+    }
+    else {
+      return this.prepare(this.message);
     }
   }
 };
