@@ -142,12 +142,12 @@ exports.length = {
     default: function () {
       return {
         invalid: 'The value is invalid.',
-        tooShortString: 'Too short, should be at least {{length}} character(s).',
-        tooLongString: 'Too long, should be at most {{length}} character(s).',
-        tooShortArray: 'Too short, should contain at least {{length}} item(s).',
-        tooLongArray: 'Too long, should contain at most {{length}} item(s).',
-        tooShortObject: 'Too short, should contain at least {{length}} key(s).',
-        tooLongObject: 'Too long, should contain at most {{length}} key(s).'
+        tooShortString: 'Too short, should be at least {{min}} character(s).',
+        tooLongString: 'Too long, should be at most {{max}} character(s).',
+        tooShortArray: 'Too short, should contain at least {{min}} item(s).',
+        tooLongArray: 'Too long, should contain at most {{max}} item(s).',
+        tooShortObject: 'Too short, should contain at least {{min}} key(s).',
+        tooLongObject: 'Too long, should contain at most {{max}} key(s).'
       };
     }
   },
@@ -181,10 +181,10 @@ exports.length = {
     }
     main: {
       if (this.min && value.length < this.min) {
-        return this.prepare(this.messages.tooShortString, {length: this.min});
+        return this.prepare(this.messages.tooShortString);
       }
       else if (this.max && value.length > this.max) {
-        return this.prepare(this.messages.tooLongString, {length: this.max});
+        return this.prepare(this.messages.tooLongString);
       }
       else {
         return true;
@@ -197,10 +197,10 @@ exports.length = {
     }
     main: {
       if (this.min && value.length < this.min) {
-        return this.prepare(this.messages.tooShortArray, {length: this.min});
+        return this.prepare(this.messages.tooShortArray);
       }
       else if (this.max && value.length > this.max) {
-        return this.prepare(this.messages.tooLongArray, {length: this.max});
+        return this.prepare(this.messages.tooLongArray);
       }
       else {
         return true;
@@ -214,14 +214,52 @@ exports.length = {
     main: {
       var keys = Object.keys(value);
       if (this.min && keys.length < this.min) {
-        return this.prepare(this.messages.tooShortObject, {length: this.min});
+        return this.prepare(this.messages.tooShortObject);
       }
       else if (this.max && keys.length > this.max) {
-        return this.prepare(this.messages.tooLongObject, {length: this.max});
+        return this.prepare(this.messages.tooLongObject);
       }
       else {
         return true;
       }
+    }
+  }
+};
+
+/**
+ * # Number Validator
+ *
+ * Ensures that a given value is a number within the specified range.
+ *
+ * @type {Validator}
+ */
+exports.number = {
+  messages: {
+    default: function () {
+      return {
+        invalid: "Expected a number.",
+        tooSmall: "Must be at least {{min}}.",
+        tooLarge: "Must be at most {{max}}."
+      };
+    }
+  },
+  min: {},
+  max: {},
+  validate: function (value) {
+    if (this.allowEmpty && this.isEmpty(value)) {
+      return true;
+    }
+    else if (typeof value !== 'number') {
+      return this.messages.invalid;
+    }
+    else if (this.min && value < this.min) {
+      return this.prepare(this.messages.tooSmall);
+    }
+    else if (this.max && value > this.max) {
+      return this.prepare(this.messages.tooLarge);
+    }
+    else {
+      return true;
     }
   }
 };

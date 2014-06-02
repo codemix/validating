@@ -235,3 +235,28 @@ describe('validators.length', function () {
     validator.validate({a:1,b:2,c:3,d:4,e:5,f:6}).should.be.true;
   });
 });
+
+describe('validators.number', function () {
+  var validator = Validating.create('number', {
+    min: 3,
+    max: 10
+  });
+
+  it('should reject invalid values', function () {
+    validator.validate('nope').should.equal('Expected a number.');
+  });
+
+  it('should reject values which are too small', function () {
+    validator.validate(1).should.equal('Must be at least 3.');
+  });
+
+  it('should reject values which are too large', function () {
+    validator.validate(11).should.equal('Must be at most 10.');
+  });
+
+  it('should accept valid values', function () {
+    validator.validate(3).should.be.true;
+    validator.validate(5).should.be.true;
+    validator.validate(10).should.be.true;
+  });
+});
