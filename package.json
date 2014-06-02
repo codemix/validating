@@ -1,0 +1,48 @@
+{
+  "name": "validating",
+  "version": "0.0.1",
+  "description": "Quick and easy validators for node.js and the browser.",
+  "main": "lib/index.js",
+  "scripts": {
+    "all": "npm test; npm run coverage; npm run minify",
+    "prepublish": "npm run all",
+    "pretest": "npm run jshint && npm run build",
+    "jshint": "./node_modules/.bin/jshint ./src",
+    "build": "./node_modules/.bin/contractual -o ./lib ./src;",
+    "test": "./node_modules/mocha/bin/mocha",
+    "watch": "./node_modules/mocha/bin/mocha  --watch",
+    "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha",
+    "browserify": "./node_modules/.bin/browserify -o ./dist/validating.js ./lib/index.js",
+    "minify": "npm run browserify; ./node_modules/.bin/uglifyjs -o ./dist/validating.min.js ./dist/validating.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codemix/validating"
+  },
+  "keywords": [
+    "valid",
+    "validation",
+    "validator",
+    "validators",
+    "validating"
+  ],
+  "author": "Charles Pick <charles@codemix.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/codemix/validating/issues"
+  },
+  "homepage": "https://github.com/codemix/validating",
+  "devDependencies": {
+    "expect.js": "~0.3.1",
+    "should": "~3.3.1",
+    "mocha": "~1.18.2",
+    "istanbul": "~0.2.10",
+    "jshint": "~2.5.1",
+    "uglify-js": "~2.4.13",
+    "contractual": "~0.1.0",
+    "browserify": "~4.1.6"
+  },
+  "dependencies": {
+    "classing": "0.0.6"
+  }
+}

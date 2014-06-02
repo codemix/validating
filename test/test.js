@@ -1,0 +1,203 @@
+var expect = require('expect.js');
+
+var Validating = require('../lib'),
+    Class = require('classing');
+
+describe('Validating', function () {
+
+  it('should create the builtin validators', function () {
+    expect(Validating.validators).to.have.property('required');
+    expect(Validating.validators).to.have.property('type');
+    expect(Validating.validators).to.have.property('instanceOf');
+  });
+
+  it('should create a validator instance', function () {
+    var validator = Validating.create('required');
+    validator.should.be.an.instanceOf(Validating.Validator);
+  });
+
+  it('should create a validator, with some options', function () {
+    var validator = Validating.create('required', {
+      message: 'Required!'
+    });
+    validator.should.be.an.instanceOf(Validating.Validator);
+    validator.message.should.equal('Required!');
+  });
+
+
+  describe('Validating.forDescriptors()', function () {
+    var User = Class.create({
+      name: {
+        rules: [
+          {name: 'required'},
+          ['type', {type: 'string'}]
+        ]
+      },
+      email: {
+        rules: [
+          {name: 'type', type: 'string'}
+        ]
+      }
+    });
+    var validate = Validating.forDescriptors(User.descriptors);
+
+    it('should validate valid values', function () {
+      var result = validate({
+        name: 'Hello World',
+        email: 'test@test.com'
+      });
+      result.valid.should.be.true;
+      result.errors.should.eql({});
+    });
+
+    it('should fail on invalid values', function () {
+      var result = validate({
+        email: 'test@test.com'
+      });
+      result.valid.should.be.false;
+      result.errors.should.eql({
+        name: 'Cannot be empty.'
+      });
+    });
+
+    it('should return multiple error messages', function () {
+      var result = validate({
+        name: false,
+        email: {}
+      });
+      result.valid.should.be.false;
+      result.errors.should.eql({
+        name: 'Expected string, got boolean.',
+        email: 'Expected string, got object.'
+      });
+    });
+
+  });
+});
+
+describe('validators.required', function () {
+  var validator = Validating.create('required');
+
+  it('should not allow null values', function () {
+    validator.validate(null).should.equal('Cannot be empty.');
+  });
+  it('should not allow undefined values', function () {
+    validator.validate(null).should.equal('Cannot be empty.');
+  });
+  it('should not allow empty string values', function () {
+    validator.validate('').should.equal('Cannot be empty.');
+  });
+  it('should not allow empty array values', function () {
+    validator.validate([]).should.equal('Cannot be empty.');
+  });
+  it('should not allow empty object', function () {
+    validator.validate({}).should.equal('Cannot be empty.');
+  });
+  it('should not allow empty object, without prototypes', function () {
+    validator.validate(Object.create(null)).should.equal('Cannot be empty.');
+  });
+
+  it('should allow booleans', function () {
+    validator.validate(true).should.be.true;
+    validator.validate(false).should.be.true;
+  });
+  it('should allow strings', function () {
+    validator.validate('hello world').should.be.true;
+  });
+  it('should allow numbers', function () {
+    validator.validate(0).should.be.true;
+    validator.validate(100).should.be.true;
+    validator.validate(-1).should.be.true;
+    validator.validate(Infinity).should.be.true;
+  });
+
+  it('should allow arrays', function () {
+    validator.validate([1, 2 ,3]).should.be.true;
+  });
+
+  it('should allow objects', function () {
+    validator.validate({greeting: 'hello world'}).should.be.true;
+  });
+});
+
+describe('validators.type', function () {
+  var validator = Validating.create('type', {
+    type: 'string'
+  });
+
+  it('should validate strings', function () {
+    validator.validate('hello world').should.be.true;
+    validator.validate('').should.be.true;
+    validator.validate(123).should.equal('Expected string, got number.');
+  });
+
+  it('should validate null values', function () {
+    validator.type = 'null';
+    validator.validate(null).should.be.true;
+    validator.validate(undefined).should.equal('Expected null, got undefined.');
+    validator.validate(123).should.equal('Expected null, got number.');
+  });
+
+  it('should validate boolean values', function () {
+    validator.type = 'boolean';
+    validator.validate(true).should.be.true;
+    validator.validate(false).should.be.true;
+    validator.validate(undefined).should.equal('Expected boolean, got undefined.');
+    validator.validate(123).should.equal('Expected boolean, got number.');
+  });
+
+  it('should validate function values', function () {
+    validator.type = 'function';
+    validator.validate(function () {}).should.be.true;
+    validator.validate(undefined).should.equal('Expected function, got undefined.');
+    validator.validate(123).should.equal('Expected function, got number.');
+  });
+
+  it('should validate numerical values', function () {
+    validator.type = 'number';
+    validator.validate(1).should.be.true;
+    validator.validate(-1).should.be.true;
+    validator.validate(1.234).should.be.true;
+    validator.validate("123").should.equal('Expected number, got string.');
+    validator.validate(undefined).should.equal('Expected number, got undefined.');
+  });
+});
+
+
+describe('validators.instanceOf', function () {
+  var User = Class.create('User', {
+    name: {},
+    email: {}
+  });
+  var Thing = Class.create('Thing');
+
+  var validator = Validating.create('instanceOf', {
+    class: User
+  });
+
+  it('should allow / disallow empty values', function () {
+    validator.allowEmpty = true;
+    validator.validate(null).should.be.true;
+    validator.allowEmpty = false;
+    validator.validate(null).should.equal('Expected User, got null.');
+  });
+
+  it('should validate class instances', function () {
+    var user = new User({name: 'bob'}),
+        thing = new Thing();
+    validator.validate(user).should.be.true;
+    validator.validate(thing).should.equal('Expected User, got Thing.');
+    validator.validate({}).should.equal('Expected User, got Object.');
+  });
+
+  it('should validate class names', function () {
+    var user = new User({name: 'bob'}),
+        thing = new Thing();
+
+    validator.class = 'User';
+
+    validator.validate(user).should.be.true;
+    validator.validate(thing).should.equal('Expected User, got Thing.');
+    validator.validate({}).should.equal('Expected User, got Object.');
+  });
+});
