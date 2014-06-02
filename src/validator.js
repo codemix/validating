@@ -67,9 +67,12 @@ module.exports = Class.create({
   prepare: function (message, references) {
     pre: {
       typeof message === 'string', 'Message must be a string.';
-      references && typeof references === 'object', 'References must be an object.';
+      if (references) {
+        typeof references === 'object', 'References must be an object.';
+      }
     }
     main: {
+      references = references || this;
       return message.replace(/\{\{(\w+)\}\}/g, function (token, item) {
         return references[item] || '';
       });
