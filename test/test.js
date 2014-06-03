@@ -492,6 +492,12 @@ describe('validators.range', function () {
 describe('validators.ip', function () {
   var validator = Validating.create('ip');
 
+  it('should allow empty values', function () {
+    validator.allowEmpty = true;
+    validator.validate(null).should.be.true;
+    validator.allowEmpty = false;
+  });
+
   it('should reject invalid IP addresses', function () {
     validator.validate('nope').should.equal('Not a valid IP address.');
     validator.validate('256.256.256.000').should.equal('Not a valid IP address.');
@@ -508,4 +514,28 @@ describe('validators.ip', function () {
     validator.validate('2001:db8:85a3:0:0:8a2e:370:7334').should.be.true;
     validator.validate('2001:db8:85a3::8a2e:370:7334').should.be.true;
   });
+});
+
+
+describe('validators.hostname', function () {
+  var validator = Validating.create('hostname');
+
+  it('should allow empty values', function () {
+    validator.allowEmpty = true;
+    validator.validate(null).should.be.true;
+    validator.allowEmpty = false;
+  });
+
+  it('should reject invalid hostnames', function () {
+    validator.validate('nope not valid').should.equal('Not a valid hostname.');
+    validator.validate('not_a_valid_hostname.com').should.equal('Not a valid hostname.');
+    validator.validate('-not-valid-.com').should.equal('Not a valid hostname.');
+  });
+
+  it('should accept valid hostnames', function () {
+    validator.validate('example.com').should.be.true;
+    validator.validate('test-example.com').should.be.true;
+    validator.validate('codemix.co.uk').should.be.true;
+  });
+
 });
