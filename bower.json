@@ -1,6 +1,6 @@
 {
   "name": "validating",
-  "main": "validating.js",
+  "main": "lib/index.js",
   "version": "0.0.2",
   "homepage": "https://github.com/codemix/validating",
   "authors": [
@@ -23,6 +23,12 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
-  ]
+    "tests",
+    "src",
+    "coverage",
+    "package.json"
+  ],
+  "dependencies": {
+    "classing": "~0.0.7"
+  }
 }

@@ -12,7 +12,7 @@
     "test": "./node_modules/mocha/bin/mocha",
     "watch": "./node_modules/mocha/bin/mocha  --watch",
     "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha",
-    "browserify": "./node_modules/.bin/browserify -o ./dist/validating.js ./lib/index.js",
+    "browserify": "./node_modules/.bin/browserify  -s Validating -o ./dist/validating.js ./lib/index.js",
     "minify": "npm run browserify; ./node_modules/.bin/uglifyjs -o ./dist/validating.min.js ./dist/validating.js"
   },
   "repository": {
@@ -43,7 +43,7 @@
     "browserify": "~4.1.6"
   },
   "dependencies": {
-    "classing": "0.0.6",
+    "classing": "0.0.7",
     "obligations": "0.0.2"
   }
 }
