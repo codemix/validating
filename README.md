@@ -42,7 +42,7 @@ var userDescriptors = {
 
 var validateUser = validating.forDescriptors(userDescriptors);
 
-var result = validateUser.validate({
+var result = validateUser({
   name: null,
   email: 'not a valid email address...'
 });
