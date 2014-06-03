@@ -464,6 +464,56 @@ exports.regexp = {
     }
 };
 /**
+ * # Range Validator.
+ *
+ * Asserts that the given value is either *between* 2 values (inclusive), or
+ * *in* a list of acceptable values.
+ *
+ * @type {Validator}
+ */
+exports.range = {
+    messages: {
+        default: function () {
+            return {
+                between: 'Must be between {{start}} and {{stop}}.',
+                in: 'Not in the list of valid options.'
+            };
+        }
+    },
+    in: {},
+    between: {},
+    validate: function (value) {
+        if (this.allowEmpty && this.isEmpty(value)) {
+            return true;
+        } else if (this.between) {
+            return this.validateBetween(value);
+        } else if (this.in) {
+            return this.validateIn(value);
+        } else {
+            return true;
+        }
+    },
+    validateBetween: function (value) {
+        OBLIGATIONS.precondition(Array.isArray(this.between) && this.between.length === 2, '`between` must be an array containing two values.');
+        if (value >= this.between[0] && value <= this.between[1]) {
+            return true;
+        } else {
+            return this.prepare(this.messages.between, {
+                start: this.between[0],
+                stop: this.between[1]
+            });
+        }
+    },
+    validateIn: function (value) {
+        OBLIGATIONS.precondition(Array.isArray(this.in), '`in` must be an array');
+        if (~this.in.indexOf(value)) {
+            return true;
+        } else {
+            return this.prepare(this.messages.in);
+        }
+    }
+};
+/**
  * # URL Validator
  *
  * Ensures that the given value is a URL.
@@ -545,52 +595,38 @@ exports.email = {
     }
 };
 /**
- * # Range Validator.
+ * # IP Address Validator.
  *
- * Asserts that the given value is either *between* 2 values (inclusive), or
- * *in* a list of acceptable values.
+ * Ensures that the given value is a valid IPv4 or IPv6 address.
  *
  * @type {Validator}
  */
-exports.range = {
+exports.ip = {
     messages: {
         default: function () {
+            return { default: 'Not a valid IP address.' };
+        }
+    },
+    v4: { value: true },
+    v6: { value: true },
+    patterns: {
+        default: function () {
             return {
-                between: 'Must be between {{start}} and {{stop}}.',
-                in: 'Not in the list of valid options.'
+                v4: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+                // jshint ignore: line
+                v6: /(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/    // jshint ignore: line
             };
         }
     },
-    in: {},
-    between: {},
     validate: function (value) {
         if (this.allowEmpty && this.isEmpty(value)) {
             return true;
-        } else if (this.between) {
-            return this.validateBetween(value);
-        } else if (this.in) {
-            return this.validateIn(value);
-        } else {
+        } else if (this.v4 && this.patterns.v4.test(value)) {
             return true;
-        }
-    },
-    validateBetween: function (value) {
-        OBLIGATIONS.precondition(Array.isArray(this.between) && this.between.length === 2, '`between` must be an array containing two values.');
-        if (value >= this.between[0] && value <= this.between[1]) {
+        } else if (this.v6 && this.patterns.v6.test(value)) {
             return true;
         } else {
-            return this.prepare(this.messages.between, {
-                start: this.between[0],
-                stop: this.between[1]
-            });
-        }
-    },
-    validateIn: function (value) {
-        OBLIGATIONS.precondition(Array.isArray(this.in), '`in` must be an array');
-        if (~this.in.indexOf(value)) {
-            return true;
-        } else {
-            return this.prepare(this.messages.in);
+            return this.prepare(this.message);
         }
     }
 };

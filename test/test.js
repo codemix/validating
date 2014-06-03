@@ -486,3 +486,26 @@ describe('validators.range', function () {
   });
 
 });
+
+
+
+describe('validators.ip', function () {
+  var validator = Validating.create('ip');
+
+  it('should reject invalid IP addresses', function () {
+    validator.validate('nope').should.equal('Not a valid IP address.');
+    validator.validate('256.256.256.000').should.equal('Not a valid IP address.');
+  });
+
+  it('should accept valid IPv4 addresses', function () {
+    validator.validate('127.0.0.1').should.be.true;
+    validator.validate('255.0.1.1').should.be.true;
+    validator.validate('196.168.0.1').should.be.true;
+  });
+
+  it('should accept valid IPv6 addresses', function () {
+    validator.validate('2001:0db8:85a3:0000:0000:8a2e:0370:7334').should.be.true;
+    validator.validate('2001:db8:85a3:0:0:8a2e:370:7334').should.be.true;
+    validator.validate('2001:db8:85a3::8a2e:370:7334').should.be.true;
+  });
+});
