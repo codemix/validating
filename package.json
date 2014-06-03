@@ -1,6 +1,6 @@
 {
   "name": "validating",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Quick and easy validators for node.js and the browser.",
   "main": "lib/index.js",
   "scripts": {
