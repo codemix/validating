@@ -443,3 +443,67 @@ exports.email = {
     }
   }
 };
+
+/**
+ * # Range Validator.
+ *
+ * Asserts that the given value is either *between* 2 values (inclusive), or
+ * *in* a list of acceptable values.
+ *
+ * @type {Validator}
+ */
+exports.range = {
+  messages: {
+    default: function () {
+      return {
+        between: 'Must be between {{start}} and {{stop}}.',
+        in: 'Not in the list of valid options.'
+      };
+    }
+  },
+  in: {},
+  between: {},
+  validate: function (value) {
+    if (this.allowEmpty && this.isEmpty(value)) {
+      return true;
+    }
+    else if (this.between) {
+      return this.validateBetween(value);
+    }
+    else if (this.in) {
+      return this.validateIn(value);
+    }
+    else {
+      return true;
+    }
+  },
+  validateBetween: function (value) {
+    pre: {
+      Array.isArray(this.between) && this.between.length === 2, "`between` must be an array containing two values.";
+    }
+    main: {
+      if (value >= this.between[0] && value <= this.between[1]) {
+        return true;
+      }
+      else {
+        return this.prepare(this.messages.between, {
+          start: this.between[0],
+          stop: this.between[1]
+        });
+      }
+    }
+  },
+  validateIn: function (value) {
+    pre: {
+      Array.isArray(this.in), "`in` must be an array";
+    }
+    main: {
+      if (~this.in.indexOf(value)) {
+        return true;
+      }
+      else {
+        return this.prepare(this.messages.in);
+      }
+    }
+  }
+};

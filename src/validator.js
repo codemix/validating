@@ -51,7 +51,7 @@ module.exports = Class.create({
       return true;
     }
     else if (typeof value === 'object' && Object.keys(value).length === 0) {
-      return true;
+      return (!value.constructor || value.constructor === Object);
     }
     else {
       return false;

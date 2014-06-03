@@ -389,3 +389,100 @@ describe('validators.email', function () {
     validator.validate('test+"this is a thing"@example.com').should.be.true;
   });
 });
+
+
+describe('validators.range', function () {
+  describe('in', function () {
+    var validator = Validating.create('range', {
+      allowEmpty: true,
+      in: [1, 2, 3, 4, "foo"]
+    });
+
+    it('should allow empty values', function () {
+      validator.validate(null).should.be.true;
+    });
+
+    it('should reject values outside the range', function () {
+      validator.validate(5).should.equal('Not in the list of valid options.');
+      validator.validate("1").should.equal('Not in the list of valid options.');
+      validator.validate("bar").should.equal('Not in the list of valid options.');
+    });
+
+    it('should accept values within the range', function () {
+      validator.validate(1).should.be.true;
+      validator.validate(3).should.be.true;
+      validator.validate("foo").should.be.true;
+    });
+  });
+
+  describe('between numbers', function () {
+    var validator = Validating.create('range', {
+      allowEmpty: true,
+      between: [5, 10]
+    });
+
+    it('should allow empty values', function () {
+      validator.validate(null).should.be.true;
+    });
+
+    it('should reject values outside the range', function () {
+      validator.validate('a').should.equal('Must be between 5 and 10.');
+      validator.validate(4).should.equal('Must be between 5 and 10.');
+      validator.validate(11).should.equal('Must be between 5 and 10.');
+    });
+
+    it('should accept values within the range', function () {
+      validator.validate(5).should.be.true;
+      validator.validate(7).should.be.true;
+      validator.validate(10).should.be.true;
+    });
+  });
+
+  describe('between strings', function () {
+    var validator = Validating.create('range', {
+      allowEmpty: true,
+      between: ["a", "z"]
+    });
+
+    it('should allow empty values', function () {
+      validator.validate(null).should.be.true;
+    });
+
+    it('should reject values outside the range', function () {
+      validator.validate('A').should.equal('Must be between a and z.');
+      validator.validate('Z').should.equal('Must be between a and z.');
+      validator.validate('&').should.equal('Must be between a and z.');
+    });
+
+    it('should accept values within the range', function () {
+      validator.validate('a').should.be.true;
+      validator.validate('g').should.be.true;
+      validator.validate('z').should.be.true;
+    });
+  });
+
+
+  describe('between dates', function () {
+    var validator = Validating.create('range', {
+      allowEmpty: true,
+      between: [new Date(2010, 10, 24), new Date(2012, 8, 13)]
+    });
+
+    it('should allow empty values', function () {
+      validator.validate(null).should.be.true;
+    });
+
+    it('should reject values outside the range', function () {
+      validator.validate('foo').should.not.be.true;
+      validator.validate(new Date(2014, 5, 1)).should.not.be.true;
+      validator.validate(new Date(1984, 9, 1)).should.not.be.true;
+    });
+
+    it('should accept values within the range', function () {
+      validator.validate(new Date(2010, 10, 24)).should.be.true;
+      validator.validate(new Date(2011, 7, 7)).should.be.true;
+      validator.validate(new Date(2012, 8, 13)).should.be.true;
+    });
+  });
+
+});
