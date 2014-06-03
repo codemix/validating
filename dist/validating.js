@@ -658,6 +658,98 @@ exports.hostname = {
         }
     }
 };
+/**
+ * # Date Validator
+ *
+ * Ensures that the given value is a valid date.
+ *
+ * @type {Validator}
+ */
+exports.date = {
+    messages: {
+        default: function () {
+            return { default: 'Not a valid date.' };
+        }
+    },
+    pattern: { value: /^(\d{4})-(\d{2})-(\d{2})$/ },
+    validate: function (value) {
+        var matches;
+        if (this.allowEmpty && this.isEmpty(value)) {
+            return true;
+        }
+        if (value instanceof Date) {
+            return true;
+        }
+        if (matches = this.pattern.exec(value)) {
+            if (+matches[2] < 13 && +matches[3] < 32) {
+                return true;
+            }
+        }
+        return this.prepare(this.message);
+    }
+};
+/**
+ * # Time Validator
+ *
+ * Ensures that the given value is a valid time.
+ *
+ * @type {Validator}
+ */
+exports.time = {
+    messages: {
+        default: function () {
+            return { default: 'Not a valid time.' };
+        }
+    },
+    pattern: { value: /^(\d{2}):(\d{2}):(\d{2})$/ },
+    validate: function (value) {
+        var matches;
+        if (this.allowEmpty && this.isEmpty(value)) {
+            return true;
+        }
+        if (value instanceof Date) {
+            return true;
+        }
+        if (matches = this.pattern.exec(value)) {
+            if (+matches[1] < 24 && +matches[2] < 60 && +matches[3] < 60) {
+                return true;
+            }
+        }
+        return this.prepare(this.message);
+    }
+};
+/**
+ * # Date / Time Validator
+ *
+ * Ensures that the given value is a valid date / time.
+ *
+ * @type {Validator}
+ */
+exports.datetime = {
+    messages: {
+        default: function () {
+            return { default: 'Not a valid date / time.' };
+        }
+    },
+    pattern: { value: /^(\d{4})-(\d{2})-(\d{2})[\s|T]?(\d{2}):(\d{2}):(\d{2})(?:.\d{1,3})?Z?$/ },
+    validate: function (value) {
+        var matches;
+        if (this.allowEmpty && this.isEmpty(value)) {
+            return true;
+        } else if (value instanceof Date) {
+            return true;
+        } else if (matches = this.pattern.exec(value)) {
+            if (+matches[2] < 13 && // month
+                +matches[3] < 32 && // day
+                +matches[4] < 24 && // hours
+                +matches[5] < 60 && // minutes
+                +matches[6] < 60) {
+                return true;
+            }
+        }
+        return this.prepare(this.message);
+    }
+};
 },{"obligations":5}],4:[function(require,module,exports){
 "use strict";
 

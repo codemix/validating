@@ -539,3 +539,80 @@ describe('validators.hostname', function () {
   });
 
 });
+
+describe('validators.date', function () {
+  var validator = Validating.create('date');
+
+  it('should allow empty values', function () {
+    validator.allowEmpty = true;
+    validator.validate(null).should.be.true;
+    validator.allowEmpty = false;
+  });
+
+  it('should reject invalid dates', function () {
+    validator.validate('nope not valid').should.equal('Not a valid date.');
+    validator.validate('2013-99-99').should.equal('Not a valid date.');
+    validator.validate('2013-03-03 123').should.equal('Not a valid date.');
+  });
+
+  it('should accept valid dates', function () {
+    validator.validate('1984-09-01').should.be.true;
+    validator.validate('1981-07-01').should.be.true;
+    validator.validate('2014-02-28').should.be.true;
+    validator.validate(new Date()).should.be.true;
+  });
+
+});
+
+describe('validators.time', function () {
+  var validator = Validating.create('time');
+
+  it('should allow empty values', function () {
+    validator.allowEmpty = true;
+    validator.validate(null).should.be.true;
+    validator.allowEmpty = false;
+  });
+
+  it('should reject invalid time', function () {
+    validator.validate('nope not valid').should.equal('Not a valid time.');
+    validator.validate('25:00:11').should.equal('Not a valid time.');
+    validator.validate('00:61:00').should.equal('Not a valid time.');
+    validator.validate('00:00:60').should.equal('Not a valid time.');
+  });
+
+  it('should accept valid time', function () {
+    validator.validate('00:00:00').should.be.true;
+    validator.validate('12:00:02').should.be.true;
+    validator.validate('15:00:12').should.be.true;
+    validator.validate(new Date()).should.be.true;
+  });
+
+});
+
+
+describe('validators.datetime', function () {
+  var validator = Validating.create('datetime');
+
+  it('should allow empty values', function () {
+    validator.allowEmpty = true;
+    validator.validate(null).should.be.true;
+    validator.allowEmpty = false;
+  });
+
+  it('should reject invalid datetime', function () {
+    validator.validate('nope not valid').should.equal('Not a valid date / time.');
+    validator.validate('2009-01-01 25:00:11').should.equal('Not a valid date / time.');
+    validator.validate('2000-99-01 00:26:00').should.equal('Not a valid date / time.');
+    validator.validate('2000-01-01W00:00:30').should.equal('Not a valid date / time.');
+  });
+
+  it('should accept valid datetime', function () {
+    validator.validate('2009-09-09 00:00:00').should.be.true;
+    validator.validate('2012-12-12 12:00:02').should.be.true;
+    validator.validate('2001-01-01T15:00:12Z').should.be.true;
+    validator.validate('2001-01-01T15:00:12.123Z').should.be.true;
+    validator.validate(new Date()).should.be.true;
+  });
+
+});
+
