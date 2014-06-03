@@ -16,6 +16,43 @@ or [bower](http://bower.io/search/?q=validating):
     bower install --save validating
 
 
+# Usage
+
+
+### Create a function which can validate objects
+
+```js
+var validating = require('validating');
+
+var userDescriptors = {
+  name: {
+    rules: [
+      ['required'],
+      ['regexp', {pattern: /^[A-Za-z][A-Za-z0-9]*$/}]
+    ]
+  },
+  email: {
+    rules: [
+      {name: 'email'},
+      {name: 'required'}
+    ]
+  }
+};
+
+
+var validateUser = validating.forDescriptors(userDescriptors);
+
+var result = validateUser.validate({
+  name: null,
+  email: 'not a valid email address...'
+});
+
+console.log(result.valid);
+console.log(result.errors);
+
+```
+
+
 
 # Running the tests
 
