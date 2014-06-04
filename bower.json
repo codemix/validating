@@ -1,7 +1,7 @@
 {
   "name": "validating",
   "main": "lib/index.js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "homepage": "https://github.com/codemix/validating",
   "authors": [
     "Charles Pick <charles@codemix.com>"

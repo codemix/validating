@@ -249,7 +249,7 @@ exports.number = {
     if (this.allowEmpty && this.isEmpty(value)) {
       return true;
     }
-    else if (typeof value !== 'number') {
+    else if (typeof value !== 'number' || isNaN(value)) {
       return this.prepare(this.messages.invalid);
     }
     else if (this.min && value < this.min) {

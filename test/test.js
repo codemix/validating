@@ -264,6 +264,11 @@ describe('validators.number', function () {
     validator.validate('nope').should.equal('Expected a number.');
   });
 
+
+  it('should reject NaN values', function () {
+    validator.validate(NaN).should.equal('Expected a number.');
+  });
+
   it('should reject values which are too small', function () {
     validator.validate(1).should.equal('Must be at least 3.');
   });
