@@ -42,6 +42,44 @@ exports.create = function (name, properties) {
 };
 
 /**
+ * Create a function which can validate objects based on the given descriptor.
+ *
+ * @param  {String}   name        The name of the descriptor.
+ * @param  {Object}   descriptor  The descriptor to validate against.
+ * @return {Function|null}        The validation function, or null if the descriptor has no rules.
+ */
+exports.forDescriptor = function (name, descriptor) {
+  pre: {
+    name && typeof name === 'string', 'Name must be specified.';
+    descriptor && typeof descriptor === 'object', 'Descriptor must be an object.';
+  }
+  main: {
+    if (!Array.isArray(descriptor.rules)) {
+      return null;
+    }
+    var validators = [],
+        accessor = /^([\w|_|$]+)$/.test(name) ? '.' + name : '["' + name + '"]',
+        lines;
+
+    lines = descriptor.rules.map(processRule).map(function (validator) {
+      var index = validators.push(validator) - 1;
+      return 'if ((result = validators[' + index + '].validate(value)) !== true) {\n' +
+             '  isValid = false;\n' +
+             '  error = result;\n' +
+             '}\n';
+    });
+    var body = 'var isValid = true,\n' +
+               '    error, result;\n\n' +
+              lines.join('else ') + '\n' +
+              'return {valid: isValid, error: error};';
+
+    var fn = new Function('validators', 'value', body); // jshint ignore: line
+
+    return fn.bind(undefined, validators);
+  }
+};
+
+/**
  * Create a function which can validate objects based on the given descriptors.
  *
  * @param  {Object}   descriptors The descriptors to validate against.
@@ -54,7 +92,7 @@ exports.forDescriptors = function (descriptors) {
   main: {
     var names = Object.keys(descriptors),
         total = names.length,
-        validators = [],
+        validators = {},
         lines = [],
         descriptor, name, items, i, accessor;
 
@@ -68,14 +106,13 @@ exports.forDescriptors = function (descriptors) {
         accessor = '["' + name + '"]';
       }
       if (descriptor.rules) {
-        items = descriptor.rules.map(processRule).map(function (validator) {
-          var index = validators.push(validator) - 1;
-          return 'if ((result = validators[' + index + '].validate(obj' + accessor + ')) !== true) {\n' +
-                 '  isValid = false;\n' +
-                 '  errors' + accessor + ' = result;\n' +
-                 '}\n';
-        });
-        lines.push(items.join('else '));
+        validators[name] = this.forDescriptor(name, descriptor);
+        lines.push(
+          'if (!(result = validators' + accessor + '(obj' + accessor + ')).valid) {',
+          '  isValid = false;',
+          '  errors' + accessor + ' = result.error;',
+          '}'
+        );
       }
     }
     var body = 'var isValid = true,\n' +
