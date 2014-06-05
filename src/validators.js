@@ -8,6 +8,9 @@
  * @type {Validator}
  */
 exports.required = {
+  allowEmpty: {
+    value: false
+  },
   messages: {
     default: function () {
       return {

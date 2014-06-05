@@ -63,7 +63,7 @@ describe('Validating', function () {
     it('should return multiple error messages', function () {
       var result = validate({
         name: false,
-        email: {}
+        email: {foo: 'bar'}
       });
       result.valid.should.be.false;
       result.errors.should.eql({

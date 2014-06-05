@@ -35,7 +35,7 @@ module.exports = Class.create({
    * @type {Boolean}
    */
   allowEmpty: {
-    value: false
+    value: true
   },
   /**
    * Determine whether the given value is empty.

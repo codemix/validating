@@ -155,7 +155,7 @@ module.exports = Class.create({
    *
    * @type {Boolean}
    */
-    allowEmpty: { value: false },
+    allowEmpty: { value: true },
     /**
    * Determine whether the given value is empty.
    *
@@ -213,6 +213,7 @@ var OBLIGATIONS = _dereq_('obligations');
  * @type {Validator}
  */
 exports.required = {
+    allowEmpty: { value: false },
     messages: {
         default: function () {
             return { default: 'Cannot be empty.' };
