@@ -1,7 +1,7 @@
 {
   "name": "validating",
   "main": "lib/index.js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "homepage": "https://github.com/codemix/validating",
   "authors": [
     "Charles Pick <charles@codemix.com>"
@@ -29,6 +29,6 @@
     "package.json"
   ],
   "dependencies": {
-    "classing": "~0.0.7"
+    "classing": "~0.0.9"
   }
 }

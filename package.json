@@ -1,6 +1,6 @@
 {
   "name": "validating",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Quick and easy validators for node.js and the browser.",
   "main": "lib/index.js",
   "scripts": {
@@ -43,7 +43,7 @@
     "browserify": "~4.1.6"
   },
   "dependencies": {
-    "classing": "0.0.7",
+    "classing": "0.0.9",
     "obligations": "0.0.2"
   }
 }
