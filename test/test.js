@@ -29,7 +29,7 @@ describe('Validating', function () {
     var User = Class.create({
       name: {
         rules: [
-          {name: 'required'},
+          'required',
           ['type', {type: 'string'}]
         ]
       },

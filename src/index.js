@@ -137,12 +137,15 @@ exports.forDescriptors = function (descriptors) {
  */
 function processRule (rule) {
   pre: {
-    if (typeof rule !== 'function') {
+    if (typeof rule !== 'function' && typeof rule !== 'string') {
       (Array.isArray(rule) && rule[0]) || rule.name, "Validator name must be specified.";
     }
   }
   main: {
-    if (typeof rule === 'function') {
+    if (typeof rule === 'string') {
+      return exports.create(rule);
+    }
+    else if (typeof rule === 'function') {
       return new exports.Validator({
         validate: rule
       });
