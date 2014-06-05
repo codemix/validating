@@ -90,7 +90,7 @@ exports.forDescriptors = function (descriptors) {
     descriptors && typeof descriptors === 'object', 'Descriptors must be an object.';
   }
   main: {
-    var names = Object.keys(descriptors),
+    var names = Object.keys(descriptors).sort(),
         total = names.length,
         validators = {},
         lines = [],
