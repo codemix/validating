@@ -1,6 +1,6 @@
 {
   "name": "validating",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Quick and easy validators for node.js and the browser.",
   "main": "lib/index.js",
   "scripts": {
@@ -39,7 +39,7 @@
     "istanbul": "~0.2.10",
     "jshint": "~2.5.1",
     "uglify-js": "~2.4.13",
-    "contractual": "~0.1.1",
+    "contractual": "~0.1.2",
     "browserify": "~4.1.6"
   },
   "dependencies": {
