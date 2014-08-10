@@ -82,7 +82,7 @@ exports.forDescriptors = function (descriptors) {
             lines.push('if (!(result = validators' + accessor + '(obj' + accessor + ')).valid) {', '  isValid = false;', '  errors' + accessor + ' = result.error;', '}');
         }
     }
-    var body = 'var isValid = true,\n' + '    errors = {},\n' + '    result;\n\n' + lines.join('\n') + '\n' + 'return {valid: isValid, errors: errors};';
+    var body = 'var isValid = true,\n' + '    errors = {},\n' + '    result;\n\n' + lines.join('\n') + '\n' + 'return {valid: isValid, value: obj, errors: errors};';
     var fn = new Function('validators', 'obj', body);
     // jshint ignore: line
     __result = fn.bind(undefined, validators);

@@ -119,7 +119,7 @@ exports.forDescriptors = function (descriptors) {
                '    errors = {},\n' +
                '    result;\n\n' +
               lines.join('\n') + '\n' +
-              'return {valid: isValid, errors: errors};';
+              'return {valid: isValid, value: obj, errors: errors};';
     var fn = new Function('validators', 'obj', body); // jshint ignore: line
 
     return fn.bind(undefined, validators);
