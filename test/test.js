@@ -39,7 +39,7 @@ describe('Validating', function () {
         ]
       }
     });
-    var validate = Validating.forDescriptors(User.descriptors);
+    var validate = Validating.forDescriptors(User['[[descriptors]]']);
 
     it('should validate valid values', function () {
       var result = validate({
