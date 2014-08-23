@@ -43,7 +43,7 @@
     "browserify": "~4.1.6"
   },
   "dependencies": {
-    "classing": "0.0.9",
+    "classing": "0.1.0",
     "obligations": "0.0.2"
   }
 }
